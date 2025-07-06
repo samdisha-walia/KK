@@ -47,3 +47,31 @@ body {
 .read-the-docs {
   color: #888;
 }
+div {
+  background: green;
+  height: 10px;
+}
+html {
+  scroll-behavior: smooth;
+}
+/* In your CSS or Tailwind config */
+.carousel-wrapper {
+  position: relative;
+}
+.carousel-wrapper::before,
+.carousel-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  z-index: 10;
+}
+.carousel-wrapper::before {
+  left: 0;
+}
+.carousel-wrapper::after {
+  right: 0;
+}
+
+/* Add gradient fades or pointer overlays if you like */

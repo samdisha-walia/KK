@@ -1,58 +1,61 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { FlashMessageContext } from "../FlashMessageContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { showMessage } = useContext(FlashMessageContext);
+
   const [formData, setFormData] = useState({
-    email: "",
     username: "",
+    email: "",
     password: "",
-    confirmPassword: "",
+    re_password: ""
   });
+
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     }));
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  
-  const { email, username, password, confirmPassword } = formData;
+    e.preventDefault();
+    setError("");
 
-  if (password !== confirmPassword) {
-    setError("Passwords do not match.");
-    return;
-  }
-  if (password.length < 8) {
-    setError("Password must be at least 8 characters.");
-    return;
-  }
+    if (formData.password !== formData.re_password) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-  try {
-    await axios.post("http://localhost:8000/api/register/", {
-      email,
-      username,
-      password,
-      re_password: confirmPassword,
-    });
-    navigate("/login");
-  } catch (err) {
-    console.error(err.response?.data);
-    setError(
-      err.response?.data?.error ||
-      JSON.stringify(err.response?.data) ||
-      "Registration failed."
-    );
-  }
-};
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8000/api/register/",
+        {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          re_password: formData.re_password
+        }
+      );
 
-
+      showMessage("Registration successful! Please log in.", "success");
+      navigate("/login");
+    } catch (err) {
+      console.error(err.response?.data);
+      setError(
+        err.response?.data?.error || "Registration failed. Please check your inputs."
+      );
+      showMessage(
+        err.response?.data?.error || "Registration failed.",
+        "error"
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
@@ -63,19 +66,19 @@ const Register = () => {
         <h2 className="text-2xl font-bold mb-4">Register</h2>
         {error && <p className="text-red-600">{error}</p>}
         <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={formData.username}
           onChange={handleChange}
           required
           className="w-full mb-3 p-2 border rounded"
         />
         <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
           onChange={handleChange}
           required
           className="w-full mb-3 p-2 border rounded"
@@ -91,9 +94,9 @@ const Register = () => {
         />
         <input
           type="password"
-          name="confirmPassword"
+          name="re_password"
           placeholder="Confirm Password"
-          value={formData.confirmPassword}
+          value={formData.re_password}
           onChange={handleChange}
           required
           className="w-full mb-3 p-2 border rounded"
@@ -105,9 +108,11 @@ const Register = () => {
           Register
         </button>
         <p className="text-sm mt-4">
-        Already have an account? <Link to="/login" className="text-blue-500 underline">Login</Link>
-      </p>
-
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-500 underline">
+            Login
+          </Link>
+        </p>
       </form>
     </div>
   );

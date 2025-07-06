@@ -10,6 +10,10 @@ module.exports = {
         bisque:'#ffe4c4' ,
         black: "#000000",
         white: "#ffffff",
+        floralwhite: "#fffaf0",
+        ghostwhite: "#f8f8ff",
+        ivory: "#fffff0",
+        lightYellow: "#ffffe0",
         antiqueWhite: "#faebd7",
         blanchedalmond: "#ffebcd",
         chocolate: "#d2691e",
@@ -30,5 +34,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar-hide'),],
 }

@@ -10,3 +10,6 @@ export const register = async (username, email, password) => {
 export const login = async (username, password) => {
   return axios.post(`${API_URL}login/`, { username, password });
 };
+// auth.js (a helper file)
+export const isAuthenticated = () => { return !!localStorage.getItem("token");}
+export const getUsername = () => { return localStorage.getItem("username");}

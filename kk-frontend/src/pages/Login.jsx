@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../AuthContext";
+import { FlashMessageContext } from "../FlashMessageContext";
+
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);  // Import the login() function
+  const { showMessage } = useContext(FlashMessageContext);
+
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -18,24 +25,31 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+    e.preventDefault();
+    setError("");
 
-  try {
-    const { data } = await axios.post(
-      "http://localhost:8000/api/login/",
-      { username: formData.username, password: formData.password }
-    );
-    localStorage.setItem("access", data.access);
-    localStorage.setItem("refresh", data.refresh);
-    navigate("/");
-// Redirect to Home after login
-  } catch (err) {
-    console.error(err.response?.data);
-    setError("Login failed. Please check your credentials.");
-  }
-};
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8000/api/login/",
+        {
+          username: formData.username,
+          password: formData.password,
+        }
+      );
+      
+      // Instead of localStorage, call login() from context
+      login(data.access, formData.username);
+      showMessage("Logged in successfully!", "success");
 
+      // Redirect to home
+      navigate("/");
+    } catch (err) {
+      console.error(err.response?.data);
+      setError("Login failed. Please check your credentials.");
+      showMessage("Login failed. Invalid credentials.", "error");
+
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
@@ -70,9 +84,11 @@ const Login = () => {
           Login
         </button>
         <p className="text-sm mt-4">
-          Don't have an account? <Link to="/register" className="text-blue-500 underline">Register</Link>
+          Don't have an account?{" "}
+          <Link to="/register" className="text-blue-500 underline">
+            Register
+          </Link>
         </p>
-
       </form>
     </div>
   );

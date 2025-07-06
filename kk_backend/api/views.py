@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from .models import Product
+from .serializers import ProductSerializer
 
 @api_view(["POST"])
 def register_user(request):
@@ -55,3 +57,9 @@ def login_user(request):
         "refresh": str(refresh),
         "access": str(refresh.access_token),
     })
+
+@api_view(["GET"])
+def product_list(request):
+    products = Product.objects.all()
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
